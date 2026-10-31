@@ -1,0 +1,863 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Assessment &amp; Practice</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
+.wrap{max-width:1000px;margin:32px auto;padding:24px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.top h1{margin:0 0 8px}
+.muted{color:#667085;line-height:1.6}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 3px 12px #0f172a0b}
+.pill{display:inline-block;padding:5px 10px;border-radius:99px;background:#e8f0ff;color:#1746a2;font-size:12px;font-weight:bold}
+.btn,button{display:inline-block;border:0;border-radius:8px;padding:11px 15px;background:#2457d6;color:white;text-decoration:none;cursor:pointer;font-weight:600}
+.btn.secondary{background:#e8edf7;color:#172033}
+button:disabled{opacity:.6;cursor:not-allowed}
+.question{border-top:1px solid #e5e7eb;padding:20px 0}
+.question:first-child{border-top:0}
+.question h3{margin:12px 0;line-height:1.5}
+.answer{display:flex;gap:10px;align-items:flex-start;margin:9px 0;padding:12px;border:1px solid #dce3ed;border-radius:9px;cursor:pointer;font-weight:400;line-height:1.5}
+.answer:has(input:checked){background:#edf3ff;border-color:#2457d6}
+.answer input{margin-top:4px}
+.notice{padding:14px;border-radius:10px;background:#fff7db;color:#765400;line-height:1.6}
+.result{padding:18px;margin-top:18px;border-radius:12px;background:#edf8f1;border:1px solid #ccebd8}
+.explanation{margin-top:12px;padding:12px;background:#f5f7fb;border-left:3px solid #2457d6;border-radius:5px;line-height:1.6}
+.meter{height:9px;background:#e9eef6;border-radius:20px;overflow:hidden;margin-top:8px}
+.meter span{display:block;height:100%;background:#2457d6}
+.skill-summary{padding:12px 0;border-bottom:1px solid #edf0f5}
+.skill-summary:last-child{border:0}
+.muted-small{color:#667085;font-size:13px;line-height:1.6}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+@media(max-width:650px){.wrap{padding:14px}.card{padding:15px}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+
+<body>
+<main class="wrap">
+
+<header class="top">
+    <div>
+        <span class="pill">PERSONALISED SKILL EVALUATION</span>
+        <h1>Skill Assessment &amp; Practice</h1>
+        <p class="muted">
+            Apply your knowledge to realistic problems, evaluate your skills,
+            and understand what you need to improve.
+        </p>
+    </div>
+    <a class="btn secondary" href="index.html#learning">← Back to Learning Hub</a>
+</header>
+
+<section id="intro" class="card">
+    <p class="muted">Loading your skill-gap analysis...</p>
+</section>
+
+<section class="card">
+    <h2>Assessment instructions</h2>
+    <p class="muted">
+        Answer the questions based on the situations described.
+        Each question has one best answer. Submit your responses to receive
+        your score, correct answers, explanations, and skill-wise results.
+    </p>
+    <p class="muted-small">
+        This is one combined assessment portal. MCQs are the question format;
+        the assessment is the complete evaluation that measures your understanding
+        and identifies topics that need further practice.
+    </p>
+</section>
+
+<form id="assessmentForm" class="card">
+    <div id="questions"></div>
+
+    <div class="actions">
+        <button type="submit" id="submitBtn">Submit Assessment</button>
+        <button type="button" id="retryBtn" class="btn secondary" hidden>
+            Retake Assessment
+        </button>
+    </div>
+
+    <div id="result" aria-live="polite"></div>
+</form>
+
+<p class="muted-small">
+    Your results are saved using the learning progress system in this frontend.
+    They are not automatically stored in MySQL unless your backend supports that operation.
+</p>
+
+</main>
+
+<script src="session.js"></script>
+<script>
+(function () {
+"use strict";
+
+/*
+ Question format:
+ [question, options, correctOptionIndex, explanation]
+*/
+
+const questionBank = {
+
+    dsa: [
+        [
+            "A sorted array contains one million elements. You must locate a value efficiently. Which approach is most appropriate?",
+            [
+                "Linear search through every element",
+                "Binary search by repeatedly halving the search range",
+                "Use a stack to inspect the elements",
+                "Sort the array again before every comparison"
+            ],
+            1,
+            "Binary search reduces the search range by half at each step. Its time complexity is O(log n), provided the input is sorted."
+        ],
+        [
+            "A print server must process jobs in the order they arrive. Which data structure naturally supports this requirement?",
+            ["Stack", "Queue", "Tree", "Graph"],
+            1,
+            "A queue follows FIFO: first in, first out. This preserves the order in which print jobs arrive."
+        ],
+        [
+            "An algorithm compares every element with every other element using two nested loops over n elements. What is its typical time complexity?",
+            ["O(1)", "O(log n)", "O(n)", "O(n²)"],
+            3,
+            "Two nested loops that each iterate over n elements typically perform proportional to n × n comparisons, giving O(n²) complexity."
+        ],
+        [
+            "A search must work on an unsorted array without modifying its order. Which method is suitable?",
+            ["Binary search without checking the order", "Linear search", "Assume the array is sorted", "Use a heap without building one"],
+            1,
+            "Linear search checks elements sequentially and works even when the input is unsorted."
+        ],
+        [
+            "A sorting algorithm fails when the input contains duplicate values. Which test would best expose this problem?",
+            ["Test only an empty list", "Test several repeated values", "Test only one unique value", "Test only the program's user interface"],
+            1,
+            "Duplicate values test whether comparisons and equal-value handling are implemented correctly."
+        ]
+    ],
+
+    java: [
+        [
+            "A student record contains a name, roll number, marks, and a method to calculate a grade. Which design best represents this?",
+            [
+                "Store every value in unrelated global variables",
+                "Create a Student class containing the related fields and methods",
+                "Write the record only inside comments",
+                "Put all student data into one print statement"
+            ],
+            1,
+            "A class groups related state and behaviour into one logical unit. This is a core object-oriented programming principle."
+        ],
+        [
+            "A method expects marks between 0 and 100 but receives 135. What should robust application code do?",
+            [
+                "Accept the value without validation",
+                "Validate the range and reject or report invalid input",
+                "Silently change every invalid value to 100",
+                "Disable validation for the rest of the application"
+            ],
+            1,
+            "Input validation protects the correctness of calculations and prevents invalid data from entering the system."
+        ],
+        [
+            "A program attempts to open a file that may not exist. Which approach is most appropriate?",
+            [
+                "Assume the file always exists",
+                "Handle the expected exception and provide a useful message",
+                "Ignore every exception silently",
+                "Restart the computer when an error occurs"
+            ],
+            1,
+            "Exception handling allows an application to respond to expected failures without terminating unexpectedly."
+        ],
+        [
+            "Two Student objects should be considered equal when they have the same student ID. What should the class provide?",
+            [
+                "Equality logic based on the student ID",
+                "A comparison based only on object memory addresses",
+                "A comparison based on the screen colour",
+                "No comparison logic at all"
+            ],
+            0,
+            "Define equality according to the application's meaning of identity. If equals is overridden, hashCode should be consistent with it."
+        ],
+        [
+            "A system must store unique course codes and prevent duplicates. Which collection is a natural choice?",
+            ["ArrayList", "HashSet", "StringBuilder", "Scanner"],
+            1,
+            "A Set represents unique elements. A HashSet is suitable when uniqueness is required and ordering is not the main requirement."
+        ]
+    ],
+
+    python: [
+        [
+            "A function calculates the average of a list but fails when the list is empty. What is the best correction?",
+            [
+                "Divide by zero and ignore the error",
+                "Check the empty-list case before calculating the average",
+                "Always return the last element",
+                "Remove all input validation"
+            ],
+            1,
+            "An empty list has no average. Handle that case explicitly, for example by returning a documented value or raising a suitable exception."
+        ],
+        [
+            "You need to count how many times each word appears in a document. Which structure is most suitable?",
+            ["A dictionary mapping words to counts", "A single Boolean variable", "An unrelated tuple", "A single floating-point value"],
+            0,
+            "A dictionary provides a natural mapping from each word to its occurrence count."
+        ],
+        [
+            "A function unexpectedly changes a list that another part of the program is using. What could explain this?",
+            [
+                "Both variables refer to the same mutable list",
+                "Python automatically converts all lists to strings",
+                "The list is stored in a database table",
+                "The function name is too short"
+            ],
+            0,
+            "Two variables can refer to the same list object. Mutating the object through one reference is visible through the other."
+        ],
+        [
+            "A user enters text where an integer is expected. How should the application handle the conversion?",
+            [
+                "Assume all input is numeric",
+                "Validate the input or handle ValueError",
+                "Suppress every exception",
+                "Delete the user's account"
+            ],
+            1,
+            "Input validation and handling ValueError allow the program to respond safely when conversion fails."
+        ]
+    ],
+
+    sql: [
+        [
+            "You need each department's average CGPA, but only departments with an average above 8.0 should appear. Which clause filters the groups?",
+            [
+                "WHERE AVG(cgpa) > 8",
+                "HAVING AVG(cgpa) > 8",
+                "ORDER BY AVG(cgpa) > 8",
+                "JOIN AVG(cgpa) > 8"
+            ],
+            1,
+            "HAVING filters groups after GROUP BY. WHERE filters individual rows before grouping."
+        ],
+        [
+            "You must list every student, including students who do not yet have an academic record. Which join is appropriate?",
+            [
+                "INNER JOIN",
+                "LEFT JOIN with students as the left table",
+                "CROSS JOIN",
+                "An INNER JOIN that removes unmatched rows"
+            ],
+            1,
+            "A LEFT JOIN preserves all rows from the left table. Columns from a missing matching record will be NULL."
+        ],
+        [
+            "A join unexpectedly returns several rows for one student. What should you investigate first?",
+            [
+                "Whether the related table contains multiple matching records",
+                "The CSS font size",
+                "The order of the navigation buttons",
+                "Whether the database has a logo"
+            ],
+            0,
+            "A one-to-many relationship can produce several rows for one student. Inspect the join keys and relationship cardinality."
+        ],
+        [
+            "A Java application searches a database using a name entered by the user. What is the safer way to pass the value to SQL?",
+            [
+                "Concatenate the raw input into the SQL string",
+                "Use a PreparedStatement parameter",
+                "Remove random characters and concatenate the rest",
+                "Display the SQL without executing it"
+            ],
+            1,
+            "PreparedStatement parameters separate query structure from supplied values and help prevent SQL injection."
+        ]
+    ],
+
+    git: [
+        [
+            "You changed three files but want the next commit to contain only one Java file. What should you do?",
+            [
+                "Stage only the intended Java file before committing",
+                "Delete the other changes",
+                "Commit everything without checking",
+                "Create a new repository for every file"
+            ],
+            0,
+            "Git lets you stage specific files. Review the staged changes before committing."
+        ],
+        [
+            "Two developers edit the same lines and Git reports a merge conflict. What is the correct response?",
+            [
+                "Delete the repository immediately",
+                "Review both changes, resolve the conflict, and test the result",
+                "Assume Git has selected the correct business logic",
+                "Rename every file"
+            ],
+            1,
+            "A merge conflict requires a deliberate decision about the intended combined code, followed by testing."
+        ],
+        [
+            "A developer accidentally committed a password to a repository. What should happen next?",
+            [
+                "Only change the variable name",
+                "Revoke or rotate the exposed secret and address the repository history",
+                "Make the repository description longer",
+                "Ignore it if the application still runs"
+            ],
+            1,
+            "An exposed credential must be treated as compromised. Rotate it and follow the appropriate repository cleanup and incident process."
+        ],
+        [
+            "Why create a separate Git branch for a new feature?",
+            [
+                "To isolate work until it is ready to integrate",
+                "To automatically guarantee that code has no bugs",
+                "To remove the need for commits",
+                "To prevent all collaboration"
+            ],
+            0,
+            "Branches isolate feature work and make review and integration easier."
+        ]
+    ],
+
+    web: [
+        [
+            "A web form accepts a student's email address. Where should essential validation occur?",
+            [
+                "Only in CSS",
+                "In the backend, even if client-side validation also exists",
+                "Only in the page title",
+                "Nowhere if the form looks correct"
+            ],
+            1,
+            "Client-side checks improve usability, but backend validation is essential because requests can bypass the browser interface."
+        ],
+        [
+            "A JavaScript function fetches student data from a backend. What should it do when the request fails?",
+            [
+                "Assume the response contains valid JSON",
+                "Handle errors and show a suitable message",
+                "Delete the user's browser",
+                "Hide all error information from developers"
+            ],
+            1,
+            "Network requests can fail. Error handling should communicate the problem and prevent the interface from treating failed data as valid."
+        ],
+        [
+            "A dashboard must work on mobile and desktop. Which implementation decision is most appropriate?",
+            [
+                "Use a fixed width that exceeds every phone screen",
+                "Use responsive layout rules and test different viewport sizes",
+                "Remove all labels",
+                "Use images for every paragraph"
+            ],
+            1,
+            "Responsive layouts adapt to different screen sizes and should be tested at representative viewport widths."
+        ],
+        [
+            "A browser displays outdated JavaScript after you replace the file. What should you check?",
+            [
+                "Browser caching and whether the correct file is loaded",
+                "The student's CGPA",
+                "The database table colour",
+                "The keyboard language only"
+            ],
+            0,
+            "Check the loaded script path, browser cache and developer console to confirm the browser is using the updated file."
+        ]
+    ],
+
+    communication: [
+        [
+            "During a project review, a reviewer asks why your application uses JDBC. Which answer is strongest?",
+            [
+                "It is just a library and I do not know what it does",
+                "JDBC lets Java applications connect to databases, execute SQL statements and process results",
+                "It is used only to design HTML",
+                "It automatically guarantees that all data is correct"
+            ],
+            1,
+            "A strong technical explanation states the purpose of JDBC and describes its role in database communication."
+        ],
+        [
+            "You discover a defect shortly before a project demonstration. What is the most professional response?",
+            [
+                "Hide the defect and claim everything works",
+                "Explain the impact, prioritise a safe fix, and be honest about remaining limitations",
+                "Blame another team member immediately",
+                "Remove unrelated features without testing"
+            ],
+            1,
+            "Professional communication combines transparency, prioritisation and a clear explanation of what has and has not been verified."
+        ],
+        [
+            "A reviewer does not understand your architecture explanation. What should you do?",
+            [
+                "Repeat the same technical terms louder",
+                "Explain the flow step by step using a concrete example",
+                "Skip all questions",
+                "Add more unexplained abbreviations"
+            ],
+            1,
+            "A clear explanation adapts to the audience and uses a simple example to show how the components interact."
+        ]
+    ],
+
+    aptitude: 
+        [
+    "The average of five test scores is 70. Four scores total 260. What is the fifth score?",
+    ["70", "80", "90", "100"],
+    2,
+    "The total is 5 × 70 = 350. The missing score is 350 − 260 = 90."
+],
+
+    machinelearning: [
+        [
+            "A model performs very well on training data but poorly on unseen data. What is the likely issue?",
+            ["Overfitting", "Perfect generalisation", "Database normalisation", "Network latency only"],
+            0,
+            "Overfitting occurs when a model learns patterns specific to training data that do not generalise well."
+        ],
+        [
+            "A dataset contains 99% negative cases and 1% positive cases. Why can accuracy be misleading?",
+            [
+                "Accuracy always equals recall",
+                "A model predicting only the majority class may achieve high accuracy while missing every positive case",
+                "The dataset cannot be stored",
+                "Precision is always 100%"
+            ],
+            1,
+            "With imbalanced data, a model can appear accurate while failing to detect the minority class. Examine metrics such as precision, recall and the confusion matrix."
+        ],
+        [
+            "A feature contains information that would only become available after the event being predicted. What is the risk of using it?",
+            ["Data leakage", "Automatic fairness", "Database indexing", "Guaranteed generalisation"],
+            0,
+            "Data leakage allows a model to use information that would not legitimately be available at prediction time, producing misleading evaluation results."
+        ]
+    ],
+
+    cybersecurity: [
+        [
+            "A login system stores user passwords as plain text. What is the most appropriate improvement?",
+            [
+                "Store passwords using a suitable salted password-hashing algorithm",
+                "Hide the password field with CSS",
+                "Store passwords in a public file",
+                "Change only the page background"
+            ],
+            0,
+            "Passwords should not be stored in plain text. Use a suitable password-hashing algorithm with salts and follow secure authentication practices."
+        ],
+        [
+            "An email asks you to sign in through an unfamiliar link to prevent account closure. What should you do?",
+            [
+                "Click immediately",
+                "Verify the request through the official website or trusted channel",
+                "Reply with your password",
+                "Forward it to everyone"
+            ],
+            1,
+            "Urgent threats and unfamiliar links can indicate phishing. Verify independently through an official channel."
+        ],
+        [
+            "A backend allows every logged-in user to view every student's private records. Which control is missing?",
+            [
+                "Authorisation checks for the requested records",
+                "A larger logo",
+                "Alphabetical sorting",
+                "A video player"
+            ],
+            0,
+            "Authentication establishes who the user is. Authorisation determines which records and actions that user is permitted to access."
+        ]
+    ],
+
+    design: [
+        [
+            "Users repeatedly miss the primary action on a dashboard. What should you investigate first?",
+            [
+                "Visual hierarchy, placement and clarity of the action",
+                "The Java compiler version only",
+                "The database password",
+                "The repository name"
+            ],
+            0,
+            "Visual hierarchy and clear labels help users identify important actions. Usability testing can confirm the cause."
+        ],
+        [
+            "A status indicator communicates success only through green and failure only through red. What improvement helps accessibility?",
+            [
+                "Add meaningful text or icons as well",
+                "Make the colours harder to distinguish",
+                "Remove all status information",
+                "Make every status identical"
+            ],
+            0,
+            "Colour should not be the only way to communicate information. Include text, icons or another accessible indicator."
+        ],
+        [
+            "Before building an expensive, complex interface, how can you test whether the workflow makes sense?",
+            [
+                "Create and evaluate a prototype or wireframe",
+                "Release it without testing",
+                "Add animations first",
+                "Skip feedback from users"
+            ],
+            0,
+            "Prototypes let teams evaluate navigation and user flows before committing to a full implementation."
+        ]
+    ],
+
+    networking: [
+        [
+            "A device can reach a server by IP address but cannot resolve its domain name. Which service should you investigate first?",
+            ["DNS", "CSS", "JDBC", "Git"],
+            0,
+            "DNS resolves domain names to IP addresses. A name-resolution problem can occur even when IP connectivity works."
+        ],
+        [
+            "A server accepts TCP connections on the wrong port. What should you check?",
+            [
+                "The configured listening port and the client's destination port",
+                "The webpage font",
+                "The database column width only",
+                "The user's desktop wallpaper"
+            ],
+            0,
+            "The client must connect to the correct address and port, and the service must be listening and reachable there."
+        ]
+    ],
+
+    cloud: [
+        [
+            "An application must scale when the number of requests increases. What should be evaluated first?",
+            [
+                "Load patterns, resource bottlenecks and suitable scaling options",
+                "The logo size only",
+                "Removing all monitoring",
+                "Increasing every resource without measurement"
+            ],
+            0,
+            "Scaling decisions should be based on workload and observed bottlenecks. Monitoring helps determine appropriate capacity."
+        ],
+        [
+            "A container works on one developer's computer but fails in deployment. What is a useful first step?",
+            [
+                "Compare environment configuration, dependencies and logs",
+                "Delete all application tests",
+                "Assume the container image cannot fail",
+                "Change unrelated CSS"
+            ],
+            0,
+            "Compare the deployed environment with the working environment and inspect logs, configuration and dependencies."
+        ]
+    ]
+};
+
+function normalise(value) {
+    return String(value || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "");
+}
+
+function bankFor(skill) {
+    const s = normalise(skill);
+
+    if (/sql|database|mysql|dbms/.test(s)) return "sql";
+    if (/datastructure|algorithm|dsa|searching|sorting/.test(s)) return "dsa";
+    if (s.includes("python")) return "python";
+    if (s.includes("java") && !s.includes("javascript")) return "java";
+    if (/git|github|versioncontrol/.test(s)) return "git";
+    if (/javascript|html|css|frontend|react|node|webdevelopment|fullstack|webdeveloper/.test(s)) return "web";
+    if (/communicat|interview|presentation/.test(s)) return "communication";
+    if (/aptitude|reasoning|quantitative/.test(s)) return "aptitude";
+    if (/machinelearning|deeplearning|neuralnetwork|dataanalysis|datascience/.test(s)) return "machinelearning";
+    if (/cybersecurity|security|cryptography/.test(s)) return "cybersecurity";
+    if (/uiux|design|figma|prototyp|userresearch/.test(s)) return "design";
+    if (/network|routing|tcpip/.test(s)) return "networking";
+    if (/cloud|aws|azure|devops|docker|kubernetes|linux/.test(s)) return "cloud";
+
+    return null;
+}
+
+function esc(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+let allGaps = [];
+
+try {
+    allGaps = StudentSession.gaps()
+        .filter(item => item && item.skill)
+        .sort((a, b) => Number(b.gap || 0) - Number(a.gap || 0));
+} catch (error) {
+    console.error("Could not load skill gaps:", error);
+}
+
+if (!StudentSession.isLoggedIn()) {
+    document.getElementById("intro").innerHTML =
+        '<div class="notice">Please log in to the main application and run your skill analysis first. Your assessment is personalised using that analysis.</div>' +
+        '<p><a class="btn" href="index.html">Go to Login</a></p>';
+
+    document.getElementById("questions").innerHTML = "";
+    document.getElementById("submitBtn").hidden = true;
+    return;
+}
+
+const positiveGaps = allGaps.filter(item => Number(item.gap || 0) > 0);
+const priorities = (positiveGaps.length ? positiveGaps : allGaps).slice(0, 3);
+
+const student = StudentSession.student();
+
+document.getElementById("intro").innerHTML =
+    "<h2>" +
+    (student && student.name
+        ? "Assessment for " + esc(student.name)
+        : "Your personalised assessment") +
+    "</h2>" +
+    '<p class="muted">Questions are selected from your highest-priority skill gaps. Your results show which areas need further practice.</p>' +
+    (
+        priorities.length
+        ? priorities.map(item => {
+            const gap = Math.max(0, Math.min(100, Number(item.gap) || 0));
+
+            return `
+                <div class="skill-summary">
+                    <strong>${esc(item.skill)}</strong>
+                    <div class="muted-small">
+                        Current: ${Math.round(Number(item.current) || 0)}%
+                        · Target: ${Math.round(Number(item.required) || 0)}%
+                        · Gap: ${Math.round(gap)}%
+                    </div>
+                    <div class="meter">
+                        <span style="width:${gap}%"></span>
+                    </div>
+                </div>
+            `;
+        }).join("")
+        : '<div class="notice">No skill-gap records were found. Run the Skills &amp; Career analysis in the main application to personalise the assessment.</div>'
+    );
+
+let selectedQuestions = [];
+
+priorities.forEach(item => {
+    const category = bankFor(item.skill);
+
+    if (!category || !questionBank[category]) return;
+
+    const pool = questionBank[category];
+
+    pool.forEach(question => {
+        selectedQuestions.push({
+            skill: item.skill,
+            question: question
+        });
+    });
+});
+
+/* Remove duplicate question text and keep a manageable assessment length. */
+const uniqueQuestions = [];
+const seenQuestions = new Set();
+
+selectedQuestions.forEach(item => {
+    const key = item.question[0];
+
+    if (!seenQuestions.has(key)) {
+        seenQuestions.add(key);
+        uniqueQuestions.push(item);
+    }
+});
+
+selectedQuestions = uniqueQuestions.slice(0, 12);
+
+const form = document.getElementById("assessmentForm");
+const questionContainer = document.getElementById("questions");
+const submitButton = document.getElementById("submitBtn");
+const retryButton = document.getElementById("retryBtn");
+const resultContainer = document.getElementById("result");
+
+if (!selectedQuestions.length) {
+    questionContainer.innerHTML =
+        '<div class="notice">Your analysis did not contain a recognised skill category for this assessment yet. Update the skill-to-question mapping in bankFor() to match your skill names.</div>';
+
+    submitButton.hidden = true;
+} else {
+    questionContainer.innerHTML =
+        '<h2>Applied assessment</h2>' +
+        '<p class="muted">Answer all ' + selectedQuestions.length +
+        ' questions. The explanations will appear after submission.</p>' +
+        selectedQuestions.map((item, index) => {
+            const q = item.question;
+
+            return `
+                <section class="question">
+                    <span class="pill">${esc(item.skill)} · Applied scenario</span>
+                    <h3>${index + 1}. ${esc(q[0])}</h3>
+
+                    ${q[1].map((option, optionIndex) => `
+                        <label class="answer">
+                            <input
+                                type="radio"
+                                name="question${index}"
+                                value="${optionIndex}"
+                                required>
+                            <span>${esc(option)}</span>
+                        </label>
+                    `).join("")}
+
+                    <div class="explanation" id="explanation${index}" hidden></div>
+                </section>
+            `;
+        }).join("");
+}
+
+form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    if (!selectedQuestions.length) return;
+
+    if (!form.reportValidity()) return;
+
+    let score = 0;
+    const bySkill = {};
+
+    selectedQuestions.forEach((item, index) => {
+        const q = item.question;
+        const selected = form.querySelector(
+            'input[name="question' + index + '"]:checked'
+        );
+
+        const selectedIndex = selected ? Number(selected.value) : -1;
+        const correct = selectedIndex === q[2];
+
+        if (correct) score++;
+
+        if (!bySkill[item.skill]) {
+            bySkill[item.skill] = {
+                correct: 0,
+                total: 0
+            };
+        }
+
+        bySkill[item.skill].total++;
+
+        if (correct) bySkill[item.skill].correct++;
+
+        const explanation = document.getElementById("explanation" + index);
+
+        explanation.hidden = false;
+        explanation.innerHTML =
+            "<strong>" + (correct ? "Correct answer" : "Review this concept") + "</strong>" +
+            "<p>" + esc(q[3]) + "</p>" +
+            "<p><strong>Correct answer:</strong> " + esc(q[1][q[2]]) + "</p>";
+
+        form.querySelectorAll(
+            'input[name="question' + index + '"]'
+        ).forEach(input => {
+            input.disabled = true;
+        });
+    });
+
+    const total = selectedQuestions.length;
+    const percentage = Math.round((score / total) * 100);
+
+    let recommendation;
+
+    if (percentage >= 85) {
+        recommendation = "Strong performance. Continue with advanced problems and practical projects in your priority skills.";
+    } else if (percentage >= 65) {
+        recommendation = "Good foundation. Review the explanations for missed questions, then practise the weaker topics.";
+    } else {
+        recommendation = "Start with the recommended learning videos for these skills. Review the explanations and retake the assessment after practising.";
+    }
+
+    resultContainer.className = "result";
+
+    resultContainer.innerHTML =
+        "<h2>Assessment Result: " + percentage + "%</h2>" +
+        "<p>You answered <strong>" + score + " out of " + total +
+        "</strong> questions correctly.</p>" +
+        "<p>" + esc(recommendation) + "</p>" +
+        "<h3>Skill-wise performance</h3>" +
+        Object.entries(bySkill).map(([skill, stats]) => {
+            const skillPercentage = Math.round(
+                stats.correct / stats.total * 100
+            );
+
+            return `
+                <div class="skill-summary">
+                    <strong>${esc(skill)}</strong>
+                    <div class="muted-small">
+                        ${stats.correct} of ${stats.total} correct
+                        · ${skillPercentage}%
+                    </div>
+                    <div class="meter">
+                        <span style="width:${skillPercentage}%"></span>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    const resultData = {
+        score: score,
+        total: total,
+        percentage: percentage,
+        topics: priorities.map(item => item.skill),
+        bySkill: bySkill,
+        updatedAt: new Date().toISOString()
+    };
+
+    try {
+        StudentSession.saveQuizAttempt(
+            "skill-gap-assessment",
+            score,
+            total
+        );
+
+        StudentSession.saveQuizResult(resultData);
+        StudentSession.saveAssessmentResult(resultData);
+
+        StudentSession.saveProgress(
+            "latestAssessmentDetails",
+            Object.assign({ completed: true }, resultData)
+        );
+    } catch (error) {
+        console.error("Could not save assessment progress:", error);
+
+        resultContainer.innerHTML +=
+            '<p class="muted-small">Your result is displayed, but progress could not be saved. Check session.js.</p>';
+    }
+
+    submitButton.hidden = true;
+    retryButton.hidden = false;
+
+    resultContainer.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+});
+
+retryButton.addEventListener("click", function () {
+    window.location.reload();
+});
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Academic &amp; Career Readiness Analytics</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="learning.css">
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="login-page">
+    <div class="login-left">
+        <div class="login-brand">
+            <h1>Smart Academic &amp;<br>Career Readiness<br>Analytics</h1>
+            <p>A personalized platform that transforms academic performance, technical skills and career-readiness assessments into meaningful career insights.</p>
+
+            <div class="login-features">
+                <span>Academic Analytics</span>
+                <span>Skill Gap Detection</span>
+                <span>Career Readiness</span>
+                <span>Personalized Guidance</span>
+            </div>
+
+            <div class="login-visual">
+                <div class="login-visual-card">
+                    <small>ACADEMIC</small><strong>82%</strong><span>Performance</span>
+                </div>
+                <div class="login-visual-card">
+                    <small>SKILLS</small><strong>74%</strong><span>Career Match</span>
+                </div>
+                <div class="login-visual-card">
+                    <small>READINESS</small><strong>78%</strong><span>Career Score</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-right">
+        <div class="login-card">
+            <div class="login-icon"></div>
+            <h1>Welcome Back</h1>
+            <p>Sign in to access your academic and career-readiness workspace.</p>
+
+            <form id="loginForm">
+                <div class="login-field">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email address" required>
+                </div>
+
+                <div class="login-field">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="login-button">Login to Dashboard</button>
+            </form>
+
+            <div id="loginMessage"></div>
+            <div class="login-footer">Your career journey starts with understanding where you are today.</div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN APPLICATION -->
+<div id="app" class="hidden">
+
+    <header class="header">
+        <div>
+            <h1>Smart Academic &amp; Career Readiness Analytics</h1>
+            <p>Academic assessment • Skill-gap analysis • Career guidance</p>
+        </div>
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+        <button data-section="dashboard" onclick="showSection('dashboard')">Dashboard</button>
+        <button data-section="academic" onclick="showSection('academic')">Academic</button>
+        <button data-section="skills" onclick="showSection('skills')">Skills &amp; Career</button>
+        <button data-section="career" onclick="showSection('career')">Career Readiness</button>
+        <button data-section="analysis" onclick="showSection('analysis')">Analysis</button>
+        <button data-section="learning" onclick="showSection('learning')">Learning Hub</button>
+        <button class="logout-button" onclick="logout()">Logout</button>
+    </nav>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section">
+        <div class="dashboard-welcome">
+            <span class="welcome-label">CAREER READINESS WORKSPACE</span>
+            <h2>Welcome back, <span id="dashboardStudentName">Student</span> 👋</h2>
+            <p>Track your assessment progress and career preparation journey from one place.</p>
+        </div>
+
+        <h2>Student Overview</h2>
+        <p class="section-description">Your account information and selected career pathway.</p>
+
+        <div class="student-overview">
+            <div class="student-info-card"><span>Student Name</span><strong id="dashboardStudentNameInfo">Not entered</strong></div>
+            <div class="student-info-card"><span>Email</span><strong id="dashboardStudentEmail">Not entered</strong></div>
+            <div class="student-info-card"><span>Department</span><strong id="dashboardStudentDepartment">Not entered</strong></div>
+            <div class="student-info-card"><span>Academic Year</span><strong id="dashboardStudentYear">Not entered</strong></div>
+            <div class="student-info-card"><span>Target Career</span><strong id="dashboardTargetCareer">Not selected</strong></div>
+            <div class="student-info-card"><span>Profile Status</span><strong id="dashboardProfileStatus">Incomplete</strong></div>
+        </div>
+
+        <h2>Assessment Progress</h2>
+        <p class="section-description">Complete each assessment stage to generate your personalized career analysis.</p>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card"><h3>Academic</h3><p id="dashboardAcademicStatus">Pending</p></div>
+            <div class="dashboard-card"><h3>Skills &amp; Career</h3><p id="dashboardSkillsStatus">Pending</p></div>
+            <div class="dashboard-card"><h3>Career Readiness</h3><p id="dashboardCareerStatus">Pending</p></div>
+        </div>
+    </section>
+
+    <!-- ACADEMIC -->
+    <section id="academic" class="section hidden">
+        <h2>Academic Performance</h2>
+        <p class="section-description">Enter your latest academic performance. These values contribute to your overall readiness score.</p>
+
+        <form id="academicForm">
+            <div>
+                <label for="semester">Semester</label>
+                <select id="semester" required>
+                    <option value="">Select semester</option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                    <option value="5">Semester 5</option>
+                    <option value="6">Semester 6</option>
+                    <option value="7">Semester 7</option>
+                    <option value="8">Semester 8</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="cgpa">CGPA</label>
+                <input type="number" id="cgpa" min="0" max="10" step="0.01" placeholder="Example: 8.5" required>
+            </div>
+
+            <div>
+                <label for="attendance">Attendance (%)</label>
+                <input type="number" id="attendance" min="0" max="100" step="0.1" placeholder="Example: 90" required>
+            </div>
+
+            <div>
+                <label for="backlogs">Number of Backlogs</label>
+                <input type="number" id="backlogs" min="0" step="1" placeholder="Example: 0" required>
+            </div>
+
+            <div><button type="submit">Save Academic Performance</button></div>
+        </form>
+        <div id="academicMessage"></div>
+    </section>
+
+    <!-- SKILLS AND CAREER -->
+    <section id="skills" class="section hidden">
+        <h2>Skills &amp; Career Pathway</h2>
+        <p class="section-description">Select your target career and enter your current skill proficiency. The system compares your skills against the expected requirements.</p>
+
+        <div class="career-selection-box">
+            <label for="targetCareer">Target Career</label>
+            <select id="targetCareer">
+                <option value="">Select your target career</option>
+                <option value="Software Developer">Software Developer</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+                <option value="Web Developer">Web Developer</option>
+                <option value="Mobile App Developer">Mobile App Developer</option>
+                <option value="Data Scientist">Data Scientist</option>
+                <option value="Data Analyst">Data Analyst</option>
+                <option value="AI/ML Engineer">AI/ML Engineer</option>
+                <option value="Cloud Engineer">Cloud Engineer</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+                <option value="Cybersecurity Analyst">Cybersecurity Analyst</option>
+                <option value="Database Administrator">Database Administrator</option>
+                <option value="UI/UX Designer">UI/UX Designer</option>
+                <option value="Software Tester">Software Tester</option>
+                <option value="Business Analyst">Business Analyst</option>
+                <option value="Network Engineer">Network Engineer</option>
+            </select>
+        </div>
+
+        <h3 class="subheading">Required Skills for Selected Career</h3>
+        <div id="requiredSkills">
+            <p class="info-text">Select a target career to view the required skills.</p>
+        </div>
+
+        <h3 class="subheading">Your Current Skills</h3>
+        <p class="section-description">Add your current skills and rate your proficiency from 0 to 100.</p>
+        <div id="skillsContainer"></div>
+
+        <div class="skill-actions">
+            <button type="button" onclick="addSkillRow()">+ Add Skill</button>
+            <button type="button" onclick="analyzeSkills()">Analyze My Skills</button>
+        </div>
+
+        <div id="skillAnalysisResult">
+            <div id="skillGapContent"></div>
+            <p id="skillReadiness"></p>
+        </div>
+    </section>
+
+    <!-- CAREER READINESS -->
+    <section id="career" class="section hidden">
+        <h2>Career Readiness Assessment</h2>
+        <p class="section-description">Evaluate your communication, technical, aptitude and interview readiness.</p>
+
+        <form id="careerForm">
+            <div class="readiness-field">
+                <label for="communicationScore">Communication Skills</label>
+                <input type="number" id="communicationScore" min="0" max="100" placeholder="Score from 0 - 100" required>
+            </div>
+            <div class="readiness-field">
+                <label for="technicalScore">Technical Knowledge</label>
+                <input type="number" id="technicalScore" min="0" max="100" placeholder="Score from 0 - 100" required>
+            </div>
+            <div class="readiness-field">
+                <label for="aptitudeScore">Aptitude</label>
+                <input type="number" id="aptitudeScore" min="0" max="100" placeholder="Score from 0 - 100" required>
+            </div>
+            <div class="readiness-field">
+                <label for="interviewScore">Interview Readiness</label>
+                <input type="number" id="interviewScore" min="0" max="100" placeholder="Score from 0 - 100" required>
+            </div>
+            <div><button type="submit">Calculate Career Readiness</button></div>
+        </form>
+
+        <div id="careerReadinessResult" class="readiness-summary hidden">
+            <h2 id="careerReadinessPercentage">0%</h2>
+            <p>Career Readiness Score</p>
+            <div class="readiness-breakdown">
+                <p><span>Communication</span><strong id="displayCommunication">--</strong></p>
+                <p><span>Technical</span><strong id="displayTechnical">--</strong></p>
+                <p><span>Aptitude</span><strong id="displayAptitude">--</strong></p>
+                <p><span>Interview</span><strong id="displayInterview">--</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ANALYSIS -->
+    <section id="analysis" class="section hidden">
+        <h2>Career Readiness Analysis</h2>
+        <p class="section-description">Your final analysis combines academic performance, target-career skill requirements and career-readiness assessment.</p>
+
+        <div class="overall-analysis">
+            <h3>Overall Career Readiness</h3>
+            <div class="overall-score"><span id="overallScore">--</span></div>
+            <p id="readinessLevel">Complete all assessments</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card"><h3>Academic</h3><p id="analysisAcademic">--</p></div>
+            <div class="dashboard-card"><h3>Skills &amp; Career</h3><p id="analysisSkills">--</p></div>
+            <div class="dashboard-card"><h3>Career Readiness</h3><p id="analysisCareer">--</p></div>
+            <div class="dashboard-card"><h3>Overall</h3><p id="analysisOverall">--</p></div>
+        </div>
+
+        <div class="analysis-columns">
+            <div class="analysis-box">
+                <h3>Strengths</h3>
+                <ul id="strengthsList"><li>Complete the assessment to identify strengths.</li></ul>
+            </div>
+            <div class="analysis-box">
+                <h3>Areas to Improve</h3>
+                <ul id="weaknessesList"><li>Complete the assessment to identify improvement areas.</li></ul>
+            </div>
+        </div>
+
+        <div class="recommendation-box">
+            <h3>Skill Gap Analysis</h3>
+            <p class="section-description">Compare your current proficiency with the expected proficiency for your selected career.</p>
+            <div id="analysisSkillGap">
+                <p class="info-text">Complete the Skills &amp; Career section to view detailed skill gaps.</p>
+            </div>
+        </div>
+
+        <div class="recommendation-box">
+            <h3>Personalized Improvement Guide</h3>
+            <p class="section-description">Practical suggestions based on your current skill gaps and selected career.</p>
+            <div id="improvementGuide">
+                <div class="improvement-item">
+                    <strong>How to improve</strong>
+                    <p>Complete the Skills &amp; Career assessment to receive skill-specific improvement guidance.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendation-box">
+            <h3>Your Improvement Roadmap</h3>
+            <p class="section-description">Prioritize your learning based on the size of each skill gap.</p>
+            <div id="improvementRoadmap">
+                <div class="roadmap-item">
+                    <span class="roadmap-number">1</span>
+                    <div>
+                        <strong>Complete your assessment</strong>
+                        <p>Your personalized roadmap will appear here after skill analysis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendation-box">
+            <h3>Career Preparation Tips</h3>
+            <p class="section-description">Simple habits that can help you continuously improve your career readiness.</p>
+
+            <div class="tips-grid">
+                <div class="tip-card"><div class="tip-icon">01</div><h4>Build Projects</h4><p>Apply your technical knowledge by building practical projects related to your target career.</p></div>
+                <div class="tip-card"><div class="tip-icon">02</div><h4>Practice Consistently</h4><p>Spend regular time improving your weakest skills.</p></div>
+                <div class="tip-card"><div class="tip-icon">03</div><h4>Prepare for Interviews</h4><p>Practice technical questions, aptitude, communication and mock interviews.</p></div>
+                <div class="tip-card"><div class="tip-icon">04</div><h4>Track Your Progress</h4><p>Reassess your skills regularly and compare your progress with your target career requirements.</p></div>
+                <div class="tip-card"><div class="tip-icon">05</div><h4>Strengthen Your Resume</h4><p>Highlight projects, technical skills, certifications and achievements.</p></div>
+                <div class="tip-card"><div class="tip-icon">06</div><h4>Learn From Mistakes</h4><p>Review incorrect answers, project issues and interview feedback to identify improvement areas.</p></div>
+            </div>
+        </div>
+
+        <div class="recommendation-box">
+            <h3>Personalized Recommendations</h3>
+            <div id="recommendationsList">
+                <div class="recommendation-item">Complete all assessment sections to receive personalized recommendations.</div>
+            </div>
+        </div>
+
+        <div class="analysis-navigation">
+            <button type="button" onclick="showSection('academic')">Academic</button>
+            <button type="button" onclick="showSection('skills')">Skills &amp; Career</button>
+            <button type="button" onclick="showSection('career')">Career Readiness</button>
+            <button type="button" onclick="showSection('learning')">Open Learning Hub</button>
+        </div>
+    </section>
+
+    <!-- PERSONALIZED LEARNING HUB -->
+    <section id="learning" class="section hidden">
+        <h2>Personalized Learning Hub</h2>
+        <p class="section-description">
+            Turn your skill-gap analysis into a learning plan. Explore recommended videos
+            and practise with quizzes.
+        </p>
+
+        <!-- PRIORITY SKILLS -->
+        <div class="recommendation-box">
+            <h3>Your Priority Skills</h3>
+            <p class="section-description">Skills with the largest gaps should generally receive attention first.</p>
+            <div id="learningSkillGaps">
+                <p class="info-text">Complete your Skills &amp; Career analysis first to identify your priority skills.</p>
+            </div>
+        </div>
+
+        <!-- RECOMMENDED LEARNING VIDEOS -->
+        <div class="recommendation-box">
+            <h3>Recommended Learning Videos</h3>
+            <p class="section-description">
+                Choose a subject to find relevant YouTube lessons. Videos open on YouTube in a new tab.
+            </p>
+
+            <div id="learningVideos" class="video-list">
+                <div class="video-card">
+                    <h3>Java Programming</h3>
+                    <p>Learn Java fundamentals, object-oriented programming and practical coding.</p>
+                    <a href="https://www.youtube.com/results?search_query=Java+programming+full+course+beginners" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+
+                <div class="video-card">
+                    <h3>HTML and CSS</h3>
+                    <p>Learn to build and style responsive websites.</p>
+                    <a href="https://www.youtube.com/results?search_query=HTML+CSS+full+course+beginners" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+
+                <div class="video-card">
+                    <h3>JavaScript</h3>
+                    <p>Practise programming logic and interactive web development.</p>
+                    <a href="https://www.youtube.com/results?search_query=JavaScript+full+course+beginners" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+
+                <div class="video-card">
+                    <h3>SQL and MySQL</h3>
+                    <p>Learn database queries, tables, joins and database fundamentals.</p>
+                    <a href="https://www.youtube.com/results?search_query=SQL+MySQL+full+course+beginners" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+
+                <div class="video-card">
+                    <h3>Data Structures and Algorithms</h3>
+                    <p>Improve problem-solving and algorithmic thinking.</p>
+                    <a href="https://www.youtube.com/results?search_query=data+structures+algorithms+full+course+beginners" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+
+                <div class="video-card">
+                    <h3>Python and Data Analysis</h3>
+                    <p>Practise Python programming and data-analysis concepts.</p>
+                    <a href="https://www.youtube.com/results?search_query=Python+data+analysis+full+course" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+
+                <div class="video-card">
+                    <h3>AI and Machine Learning</h3>
+                    <p>Explore machine learning concepts and beginner projects.</p>
+                    <a href="https://www.youtube.com/results?search_query=machine+learning+full+course+beginners" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+
+                <div class="video-card">
+                    <h3>Aptitude and Interview Preparation</h3>
+                    <p>Practise logical reasoning, quantitative aptitude and interview questions.</p>
+                    <a href="https://www.youtube.com/results?search_query=aptitude+logical+reasoning+interview+preparation" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+
+                <div class="video-card">
+                    <h3>Git and GitHub</h3>
+                    <p>Learn version control and how to manage code repositories.</p>
+                    <a href="https://www.youtube.com/results?search_query=Git+GitHub+tutorial+beginners+full+course" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+
+                <div class="video-card">
+                    <h3>Cloud Computing</h3>
+                    <p>Learn cloud-computing fundamentals and deployment concepts.</p>
+                    <a href="https://www.youtube.com/results?search_query=cloud+computing+fundamentals+full+course" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+
+                <div class="video-card">
+                    <h3>Cybersecurity</h3>
+                    <p>Understand security fundamentals, networks and common threats.</p>
+                    <a href="https://www.youtube.com/results?search_query=cybersecurity+fundamentals+full+course+beginners" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ CENTRE ONLY -->
+        <div class="recommendation-box">
+            <h3>Practice and Test Your Skills</h3>
+            <p class="section-description">
+                Test your understanding with questions and review your results.
+            </p>
+
+            <div class="learning-portal-grid">
+                <a href="quizzes.html?from=learning" class="learning-portal-card">
+                    <span class="portal-icon">🧠</span>
+                    <h3>Quiz Centre</h3>
+                    <p>Answer questions, review your knowledge and check your score.</p>
+                    <span class="portal-link">Start Practising →</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="analysis-navigation">
+            <button type="button" onclick="showSection('analysis')">Back to Analysis</button>
+            <button type="button" onclick="showSection('skills')">Update My Skills</button>
+        </div>
+    </section>
+
+</div>
+
+<!-- JAVASCRIPT -->
+<script src="session.js"></script>
+<script src="learning-progress.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
